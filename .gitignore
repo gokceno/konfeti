@@ -2,6 +2,7 @@
 .env
 node_modules
 logs
+dist
 
 # MacOS Specific
 .DS_Store

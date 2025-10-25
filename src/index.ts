@@ -3,7 +3,7 @@ import fs from "node:fs";
 import YAML from "yaml";
 import * as z from "zod";
 import { setProperty, hasProperty } from "dot-prop";
-import type { KeysToCamelCase } from "./types";
+import type { KeysToCamelCase } from "./types.ts";
 
 const open = (filename: string): string => {
   if (!filename) {
