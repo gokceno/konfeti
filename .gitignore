@@ -1,0 +1,8 @@
+*.yml
+.env.*
+.env
+node_modules
+logs
+
+# MacOS Specific
+.DS_Store
