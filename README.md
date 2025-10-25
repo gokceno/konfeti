@@ -344,6 +344,12 @@ try {
 }
 ```
 
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+For maintainers looking to publish new versions, see the [Publishing Guide](./PUBLISHING.md).
+
 ## License
 
 MIT
