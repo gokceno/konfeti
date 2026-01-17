@@ -15,6 +15,19 @@ const open = (filename: string): string => {
   return fs.readFileSync(filename, "utf8");
 };
 
+const coerceValue = (value: string): string | number | boolean => {
+  // Try to parse as boolean
+  if (value.toLowerCase() === "true") return true;
+  if (value.toLowerCase() === "false") return false;
+
+  // Try to parse as number
+  const num = Number(value);
+  if (!isNaN(num) && value.trim() !== "") return num;
+
+  // Return as string
+  return value;
+};
+
 const map = (config: object, startsWith: string = ""): object => {
   if (!process.env) {
     throw new Error("Cannot access environment variables.");
@@ -27,7 +40,11 @@ const map = (config: object, startsWith: string = ""): object => {
         hasProperty(config, key.toLowerCase().replaceAll("__", ".")),
       )
       .map(([key, value]) =>
-        setProperty(config, key.toLowerCase().replaceAll("__", "."), value),
+        setProperty(
+          config,
+          key.toLowerCase().replaceAll("__", "."),
+          coerceValue(value!),
+        ),
       )
       .pop() as object) || config
   );
