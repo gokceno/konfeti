@@ -28,17 +28,35 @@ const coerceValue = (value: string): string | number | boolean => {
   return value;
 };
 
+const ensureNestedObject = (obj: any, path: string): void => {
+  const parts = path.split(".");
+  let current = obj;
+
+  for (let i = 0; i < parts.length - 1; i++) {
+    const part = parts[i];
+    if (
+      !current[part] ||
+      typeof current[part] !== "object" ||
+      Array.isArray(current[part])
+    ) {
+      current[part] = {};
+    }
+    current = current[part];
+  }
+};
+
 const map = (config: object, startsWith: string = ""): object => {
   if (!process.env) {
     throw new Error("Cannot access environment variables.");
   }
   // TODO: Would not replace if source value is not all lower case letters.
-  const result = { ...config };
+  const result = JSON.parse(JSON.stringify(config)); // Deep clone to avoid mutation
   Object.entries(process.env)
     .filter(([key, value]) => key.startsWith(startsWith) && value !== undefined)
     .forEach(([key, value]) => {
       const path = key.toLowerCase().replaceAll("__", ".");
-      // Set the property regardless of whether it exists or is null in config
+      // Ensure nested objects exist before setting the property
+      ensureNestedObject(result, path);
       setProperty(result, path, coerceValue(value!));
     });
   return result;
