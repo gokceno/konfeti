@@ -33,21 +33,15 @@ const map = (config: object, startsWith: string = ""): object => {
     throw new Error("Cannot access environment variables.");
   }
   // TODO: Would not replace if source value is not all lower case letters.
-  return (
-    (Object.entries(process.env)
-      .filter(([key, value]) => key.startsWith(startsWith))
-      .filter(([key, value]) =>
-        hasProperty(config, key.toLowerCase().replaceAll("__", ".")),
-      )
-      .map(([key, value]) =>
-        setProperty(
-          config,
-          key.toLowerCase().replaceAll("__", "."),
-          coerceValue(value!),
-        ),
-      )
-      .pop() as object) || config
-  );
+  const result = { ...config };
+  Object.entries(process.env)
+    .filter(([key, value]) => key.startsWith(startsWith) && value !== undefined)
+    .forEach(([key, value]) => {
+      const path = key.toLowerCase().replaceAll("__", ".");
+      // Set the property regardless of whether it exists or is null in config
+      setProperty(result, path, coerceValue(value!));
+    });
+  return result;
 };
 
 const raw = <
