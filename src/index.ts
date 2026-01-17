@@ -54,7 +54,15 @@ const map = (config: object, startsWith: string = ""): object => {
   Object.entries(process.env)
     .filter(([key, value]) => key.startsWith(startsWith) && value !== undefined)
     .forEach(([key, value]) => {
-      const path = key.toLowerCase().replaceAll("__", ".");
+      const lowerKey = key.toLowerCase();
+      // Convert camelCase segments to snake_case for matching YAML structure
+      const path = lowerKey
+        .replaceAll("__", ".")
+        .split(".")
+        .map((segment) =>
+          segment.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase(),
+        )
+        .join(".");
       // Ensure nested objects exist before setting the property
       ensureNestedObject(result, path);
       setProperty(result, path, coerceValue(value!));
